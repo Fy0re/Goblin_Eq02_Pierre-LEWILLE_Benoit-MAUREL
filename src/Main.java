@@ -3,5 +3,6 @@ public class Main {
 		System.out.println("+------------------------------+");
         System.out.println("|            GOBLIN            |");
 		System.out.println("+------------------------------+");
+		
 	}
 }
