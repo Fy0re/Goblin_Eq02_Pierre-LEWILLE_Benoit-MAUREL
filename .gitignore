@@ -1,6 +1,6 @@
 # On ignore les fichier de configuration : chaque participant peut ajuster les siens 
-#.classpath
-#.settings
+.classpath
+.settings
 #.project
 
 # Compiled class file
