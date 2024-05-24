@@ -4,5 +4,6 @@ public class Main {
         System.out.println("|            GOBLIN            |");
 		System.out.println("+------------------------------+");
 		//aaa
+		//bbb
 	}
 }
