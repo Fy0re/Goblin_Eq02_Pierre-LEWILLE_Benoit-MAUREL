@@ -2,29 +2,29 @@ package partie1_db;
 
 public class Site {
 	
-	private int id_site;
-	private int pos_x;
-	private int pos_y;
+	private int idSite;
+	private int posX;
+	private int posY;
 	
-	public Site(int id_site, int pos_x, int pos_y) {
+	public Site(int idSite, int posX, int posY) {
 		/*if (id_site==null || pos_x==null || pos_y==null) {
 			throw new IllegalArgumentException("Donnée(s) manquante(s)");
 		} */
-		this.id_site = id_site;
-		this.pos_x = pos_x;
-		this.pos_y = pos_y;
+		this.idSite = idSite;
+		this.posX = posX;
+		this.posY = posY;
 	}
 
 	public int getId() {
-		return id_site;
+		return this.idSite;
 	}
 
 	public int getPosX() {
-		return pos_x;
+		return this.posX;
 	}
 
 	public int getPosY() {
-		return pos_y;
+		return this.posY;
 	}
 	
 	public boolean equals(Object o) {
