@@ -34,5 +34,8 @@ public class Site {
 				|| ( this.getPosX() == ((Site)o).getPosX()
 				&& this.getPosY() == ((Site)o).getPosY()));
 	}
+public String toString() {
+		return "("+this.getId()+", "+this.getPosX()+", "+this.getPosY()+")";
+	}
 
 }
