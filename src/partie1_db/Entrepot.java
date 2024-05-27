@@ -40,4 +40,9 @@ public class Entrepot {
 				|| this.getIdEntrepot() == ((Entrepot)o).getIdEntrepot());
 	}
 
+	public String toString() {
+		return this.getIdEntrepot() + ", " + this.getIdSite() + ", " + this.getCoutFixe() + ", "
+				+ this.getStock();
+	}
+
 }

@@ -28,4 +28,8 @@ public class Route {
 				&& this.getArrivee() == ((Route)o).getArrivee();
 	}
 	
+	public String toString() {
+		return this.getDepart() + ", " + this.getArrivee();
+	}
+	
 }

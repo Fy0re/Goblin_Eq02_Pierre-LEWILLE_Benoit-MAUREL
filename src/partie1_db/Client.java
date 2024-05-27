@@ -35,4 +35,10 @@ public class Client {
 				&& this.getMail() == ((Client)o).getMail()));
 	}
 
+	public String toString() {
+		return this.getNom() + ", " + this.getMail() + ", " + this.getEmplacement();
+	}
+
+	
+	
 }
