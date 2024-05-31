@@ -118,7 +118,7 @@ public class InitialisationDB {
 			eRoute.printStackTrace();
 		}
 
-		//---------------------------
+		//--------------------------
 		//CREATION TABLES / DATABASE
 		//--------------------------
 		Class.forName( "org.hsqldb.jdbcDriver"  );												//Appel au driver qui permet de faire des databases

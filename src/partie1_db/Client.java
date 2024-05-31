@@ -31,12 +31,24 @@ public class Client {
 		return this.nom;
 	}
 
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
 	public String getMail() {
 		return this.mail;
 	}
 	
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+	
 	public int getEmplacement() {
 		return this.emplacement;
+	}
+	
+	public void setEmplacement(int emplacement) {
+		this.emplacement = emplacement;
 	}
 	
 	public int getDemande() {

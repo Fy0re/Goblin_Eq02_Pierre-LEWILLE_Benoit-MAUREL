@@ -9,13 +9,22 @@ import java.util.List;
 import partie1_db.Client;
 import partie1_db.Entrepot;
 import partie1_db.InitialisationDB;
+import partie1_db.InitialisationDBClient;
+import partie1_db.InitialisationDBEntrepot;
+import partie1_db.InitialisationDBRoute;
 import partie1_db.Route;
 import partie1_db.Site;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
-		String choixString;
-		int choixInt;
+		String answerStr;
+		int answerInt;
+		Class.forName( "org.hsqldb.jdbcDriver"  );												//Appel au driver qui permet de faire des databases
+		String url = "jdbc:hsqldb:file:database"+File.separator+"goblin;shutdown=true";			//Emplacement dans le projet de notre database
+		String login = "sa";
+		String password = "";
+		String requete = "";
+		
 		do {
 			System.out.println(" +-------------------------------------+");
 			System.out.println(" |               GOBLIN                |");
@@ -24,13 +33,45 @@ public class Main {
 			System.out.println(" [1] Calcul bordereau de livraison");
 			System.out.println(" [2] Modification database");
 			System.out.println(" [Q] Quitter");
-			choixString = Clavier.lireString();
-			switch (choixString) {
+			answerStr = Clavier.lireString();
+			switch (answerStr) {
 			case "0" :
-				InitialisationDB.main(args);
 				System.out.println(" +-------------------------------------+");
-				System.out.println(" |       INITIALISATION REUSSIE        |");
+				System.out.println(" |       INITIALISATION DATABASE       |");
 				System.out.println(" +-------------------------------------+");
+				System.out.println(" [1] (Re)Initialiser la database complete");
+				System.out.println(" [2] (Re)Initialiser la database Client");
+				System.out.println(" [3] (Re)Initialiser la database Entrepot");
+				System.out.println(" [4] (Re)Initialiser la database Route");
+				System.out.println(" [Q] Quitter");
+				//Penser à ajouter si l'utilisateur mets une autre valeur, le retour en arrière et quitter
+				answerStr = Clavier.lireString();
+				switch (answerStr) {
+				case "1" :
+					InitialisationDB.main(args);
+					System.out.println(" +-------------------------------------+");
+					System.out.println(" |     (RE)INITIALISATION REUSSIE      |");
+					System.out.println(" +-------------------------------------+");
+					break;
+				case "2" :
+					InitialisationDBClient.main(args);
+					System.out.println(" +-------------------------------------+");
+					System.out.println(" |     (RE)INITIALISATION REUSSIE      |");
+					System.out.println(" +-------------------------------------+");
+					break;
+				case "3" :
+					InitialisationDBEntrepot.main(args);
+					System.out.println(" +-------------------------------------+");
+					System.out.println(" |     (RE)INITIALISATION REUSSIE      |");
+					System.out.println(" +-------------------------------------+");
+					break;
+				case "4" :
+					InitialisationDBRoute.main(args);
+					System.out.println(" +-------------------------------------+");
+					System.out.println(" |     (RE)INITIALISATION REUSSIE      |");
+					System.out.println(" +-------------------------------------+");
+					break;
+				}
 				break;
 			case "1" :
 				System.out.println(" +-------------------------------------+");
@@ -49,9 +90,10 @@ public class Main {
 				System.out.println(" [2] Modifier la liste des entrepôts");
 				System.out.println(" [3] Modifier la liste des sites");
 				System.out.println(" [4] Modifier la liste des routes");
+				System.out.println(" [Q] Quitter");
 				//Penser à ajouter si l'utilisateur mets une autre valeur, le retour en arrière et quitter
-				choixString = Clavier.lireString();
-				switch (choixString) {
+				answerStr = Clavier.lireString();
+				switch (answerStr) {
 					case "1" : 
 						System.out.println(" +-------------------------------------+");
 						System.out.println(" |       MODIFICATION BD CLIENTS       |");
@@ -59,29 +101,71 @@ public class Main {
 						System.out.println(" [1] Modifier un client dans la database");
 						System.out.println(" [2] Ajouter un client dans la database");
 						System.out.println(" [3] Supprimer un client dans la database");
+						System.out.println(" [Q] Quitter");
 						//Penser à ajouter si l'utilisateur mets une autre valeur, le retour en arrière et quitter
-						choixString = Clavier.lireString();
-						switch (choixString) {
+						answerStr = Clavier.lireString();
+						switch (answerStr) {
 							case "1" : 
+								String nom = "";
+								String mailOld = "";
+								String mail = "";
+								int emplacement = 0;
 								System.out.println(" +-------------------------------------+");
 								System.out.println(" |     MODIFICATION DONNEES CLIENT     |");
 								System.out.println(" +-------------------------------------+");
-								System.out.println(" [1] Selectionner un client par son nom");
-								System.out.println(" [2] Selectionner un client par son mail");
-								//Penser à ajouter si l'utilisateur mets une autre valeur, le retour en arrière et quitter
-								choixInt = Clavier.lireInt();
-								if (choixInt == 1) {
-									System.out.println("Veuillez indiquez son nom");
-									//Faire une variable de type string et chercher dans db le client associé
-									//Penser à client non existant
-								} else if (choixInt == 2) {
-									System.out.println("Veuillez indiquez son mail");
-									//Faire une variable de type string et chercher dans db le client associé
-									//Penser à client non existant
-								} else {
-									System.out.println("Choix non reconnue");
-									//Choix en boucle
+								System.out.println(" Veuillez indiquez son mail :");
+								answerStr = Clavier.lireString();
+								try (Connection connection = DriverManager.getConnection( url, login, password )){
+									requete = "SELECT COUNT(*) FROM CLIENT ";
+									requete += "WHERE CLIENT.mail = "+answerStr;
+									try ( Statement statement = connection.createStatement() ) {
+										try (ResultSet resultSet = statement.executeQuery( requete ) ) {
+											if (resultSet.next()) {
+												requete = "SELECT * FROM CLIENT ";
+												requete += "WHERE CLIENT.mail = "+answerStr;
+												try ( Statement statement2 = connection.createStatement() ) {
+													try (ResultSet resultSet2 = statement2.executeQuery( requete ) ) {
+														nom = resultSet2.getString( "nom" );
+														mail = resultSet2.getString( "mail" );
+														emplacement = resultSet2.getInt( "emplacement" );
+													}
+												}
+											}
+										}
+									}
 								}
+								Client client = new Client(nom, mail, emplacement);
+								System.out.println(" Veuillez indiquer son nouveau nom");
+								System.out.println(" ('M' pour garder l'ancien) :");
+								answerStr = Clavier.lireString();
+								if (answerStr != "M") {
+									client.setNom(answerStr);
+								}
+								System.out.println(" Veuillez indiquer son nouveau mail");
+								System.out.println(" ('M' pour garder l'ancien) :");
+								answerStr = Clavier.lireString();
+								if (answerStr != "M") {
+									client.setMail(answerStr);
+								}
+								System.out.println(" Veuillez indiquer son nouvel emplacement");
+								System.out.println(" ('M' pour garder l'ancien) :");
+								answerInt = Clavier.lireInt();
+								if (answerStr != "M") {
+									client.setEmplacement(answerInt);
+								}
+								try (Connection connection = DriverManager.getConnection( url, login, password )){
+									requete = "UPDATE CLIENT";
+									requete += "SET nom = " + client.getNom() +",";
+									requete += "mail = " + client.getMail() +",";
+									requete += "emplacement = " + client.getEmplacement();
+									requete += "WHERE mail = " + mail;
+									try ( Statement statement = connection.createStatement() ) {
+										statement.executeUpdate( requete );
+									}
+								}
+								System.out.println(" +-------------------------------------+");
+								System.out.println(" |         MODIFICATION REUSSIE        |");
+								System.out.println(" +-------------------------------------+");
 								break;
 							case "2" :
 								String nomAjoutClient;
@@ -96,7 +180,7 @@ public class Main {
 								mailAjoutClient = Clavier.lireString();
 								System.out.println(" Veuillez indiquez son emplacement");
 								emplacementAjoutClient = Clavier.lireInt();
-								Client client = new Client(nomAjoutClient, mailAjoutClient, emplacementAjoutClient);
+								client = new Client(nomAjoutClient, mailAjoutClient, emplacementAjoutClient);
 								//Non prise en compte de la mauvaise écriture du client
 								break;
 							case "3" : 
@@ -105,13 +189,14 @@ public class Main {
 								System.out.println(" +-------------------------------------+");
 								System.out.println(" [1] Selectionner un client par son nom");
 								System.out.println(" [2] Selectionner un client par son mail");
+								System.out.println(" [Q] Quitter");
 								//Penser à ajouter si l'utilisateur mets une autre valeur, le retour en arrière et quitter
-								choixInt = Clavier.lireInt();
-								if (choixInt == 1) {
+								answerInt = Clavier.lireInt();
+								if (answerInt == 1) {
 									System.out.println("Veuillez indiquez son nom");
 									//Faire une variable de type string et chercher dans db le client associé
 									//Penser à client non existant
-								} else if (choixInt == 2) {
+								} else if (answerInt == 2) {
 									System.out.println("Veuillez indiquez son mail");
 									//Faire une variable de type string et chercher dans db le client associé
 									//Penser à client non existant
@@ -129,9 +214,10 @@ public class Main {
 						System.out.println(" [1] Modifier un entrepot dans la database");
 						System.out.println(" [2] Ajouter un entrepot dans la database");
 						System.out.println(" [3] Supprimer un entrepot dans la database");
+						System.out.println(" [Q] Quitter");
 						//Penser à ajouter si l'utilisateur mets une autre valeur, le retour en arrière et quitter
-						choixString = Clavier.lireString();
-						switch (choixString) {
+						answerStr = Clavier.lireString();
+						switch (answerStr) {
 							case "1" : 
 								System.out.println(" +-------------------------------------+");
 								System.out.println(" |    MODIFICATION DONNEES ENTREPOT    |");
@@ -176,9 +262,10 @@ public class Main {
 						System.out.println(" [1] Modifier un site dans la database");
 						System.out.println(" [2] Ajouter un site dans la database");
 						System.out.println(" [3] Supprimer un site dans la database");
+						System.out.println(" [Q] Quitter");
 						//Penser à ajouter si l'utilisateur mets une autre valeur, le retour en arrière et quitter
-						choixString = Clavier.lireString();
-						switch (choixString) {
+						answerStr = Clavier.lireString();
+						switch (answerStr) {
 							case "1" : 
 								System.out.println(" +-------------------------------------+");
 								System.out.println(" |      MODIFICATION DONNEES SITE      |");
@@ -218,9 +305,10 @@ public class Main {
 						System.out.println(" +-------------------------------------+");
 						System.out.println(" [1] Ajouter une route dans la database");
 						System.out.println(" [2] Supprimer une route dans la database");
+						System.out.println(" [Q] Quitter");
 						//Penser à ajouter si l'utilisateur mets une autre valeur, le retour en arrière et quitter
-						choixString = Clavier.lireString();
-						switch (choixString) {
+						answerStr = Clavier.lireString();
+						switch (answerStr) {
 							case "1" :
 								System.out.println(" +-------------------------------------+");
 								System.out.println(" |             AJOUT ROUTE             |");
@@ -247,6 +335,6 @@ public class Main {
 				}
 				break;
 			}
-		} while (!choixString.toUpperCase().equals("Q"));
+		} while (!answerStr.toUpperCase().equals("Q"));
 	}
 }
