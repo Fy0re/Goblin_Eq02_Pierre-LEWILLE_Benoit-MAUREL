@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 
-public class Lecture_db {
+public class InitialisationDB {
 
 	public static void main(String[] args) throws Exception {
 
@@ -35,6 +35,7 @@ public class Lecture_db {
 					emplacementClient = Integer.parseInt(tokenClient.split(";")[2]);			//On récupère le 3eme élément de la ligne (les séparateurs étant ";") et on le transforme en int
 					Client client = new Client(nom, mail, emplacementClient);					//On utilise les données récupérées pour les mettre dans un objet de classe client
 					clients.add(client);														//On ajoute cette objet à la liste "clients"
+				client.resetDemande();
 				}
 			}
 		}
@@ -127,7 +128,7 @@ public class Lecture_db {
 
 		try (Connection connection = DriverManager.getConnection( url, login, password )){		//On se connecte à la db et si la connexion saute, on a un message d'exeption
 			
-			//Réinitialisation de nos database
+			//SUPPRESSION DES TABLES
 			String requete = "DROP TABLE CLIENT IF EXISTS;"
 					+"DROP TABLE ENTREPOT IF EXISTS;"
 					+"DROP TABLE ROUTE IF EXISTS;"
@@ -136,7 +137,7 @@ public class Lecture_db {
 				statement.executeUpdate( requete );												//On execute la requete redigée ci-dessus
 			}
 			
-			//Création des tables
+			//CREATION DES TABLES
 			requete = "CREATE TABLE SITE ("														//Table SITE faite en première car il y a des clés étrangères qui lui sont reliées
 					+"idSite int,"
 					+"posX int,"
@@ -147,6 +148,7 @@ public class Lecture_db {
 					+"nom varchar(20),"
 					+"mail varchar(50),"
 					+"emplacement int,"
+					+"demande int,"
 					+"PRIMARY KEY(mail),"
 					+"FOREIGN KEY (emplacement) REFERENCES SITE (idSite) ON DELETE RESTRICT);"
 					+""
@@ -168,36 +170,32 @@ public class Lecture_db {
 				statement.executeUpdate( requete );
 			}
 
-			//Remplissage des tables
+			//REMPLISSAGE DES TABLES
 			requete = "INSERT INTO SITE (idSite, posX, posY) VALUES";							//Table SITE faite en première car il y a des clés étrangères qui lui sont reliées
 			for (int i=0; i < sites.size()-1; i++) {											//On regarde tous les éléments de la liste "sites" sauf le dernier
 				requete += sites.get(i)+",";													//On ajoute tous les éléments dans notre requete
 			}
 			requete += sites.get(sites.size()-1)+";";											//On ajoute le dernier élément de la liste sans "," et avec un ";"
-			try ( Statement statement = connection.createStatement() ) {
-				statement.executeUpdate( requete );
-			}
-			requete = "INSERT INTO CLIENT (nom, mail, emplacement) VALUES";
+
+			requete += "INSERT INTO CLIENT (nom, mail, emplacement, demande) VALUES";
 			for (int i=0; i < clients.size()-1; i++) {
 				requete += "('"+ clients.get(i).getNom() +"',";
 				requete += "'"+ clients.get(i).getMail() +"',";
-				requete += clients.get(i).getEmplacement() +"),";
+				requete += clients.get(i).getEmplacement() +",";
+				requete += clients.get(i).getDemande() +"),";
 			}
 			requete += "('"+ clients.get(clients.size()-1).getNom() +"',";
 			requete += "'"+ clients.get(clients.size()-1).getMail() +"',";
-			requete += clients.get(clients.size()-1).getEmplacement() +");";
-			try ( Statement statement = connection.createStatement() ) {
-				statement.executeUpdate( requete );
-			}
-			requete = "INSERT INTO ENTREPOT (idEntrepot, idSite, coutFixe, stock) VALUES";
+			requete += clients.get(clients.size()-1).getEmplacement() +", ";
+			requete += clients.get(clients.size()-1).getDemande() +");";
+
+			requete += "INSERT INTO ENTREPOT (idEntrepot, idSite, coutFixe, stock) VALUES";
 			for (int i=0; i < entrepots.size()-1; i++) {
 				requete += entrepots.get(i)+",";
 			}
 			requete += entrepots.get(entrepots.size()-1)+";";
-			try ( Statement statement = connection.createStatement() ) {
-				statement.executeUpdate( requete );
-			}
-			requete = "INSERT INTO ROUTE (depart, arrivee) VALUES";
+			
+			requete += "INSERT INTO ROUTE (depart, arrivee) VALUES";
 			for (int i=0; i < routes.size()-1; i++) {
 				requete += routes.get(i)+",";
 			}

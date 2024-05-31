@@ -17,6 +17,16 @@ public class Client {
 		this.demande = 0;
 	}
 
+	public Client(String nom, String mail, int emplacement, int demande) {
+		/*if (id_site==null || pos_x==null || pos_y==null) {
+			throw new IllegalArgumentException("Donnée(s) manquante(s)");
+		} */
+		this.nom = nom;
+		this.mail = mail;
+		this.emplacement = emplacement;
+		this.demande = demande;
+	}
+	
 	public String getNom() {
 		return this.nom;
 	}
@@ -27,6 +37,10 @@ public class Client {
 	
 	public int getEmplacement() {
 		return this.emplacement;
+	}
+	
+	public int getDemande() {
+		return this.demande;
 	}
 	
 	public void setDemande(int demande) {

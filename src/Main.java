@@ -8,23 +8,31 @@ import java.util.List;
 
 import partie1_db.Client;
 import partie1_db.Entrepot;
+import partie1_db.InitialisationDB;
 import partie1_db.Route;
 import partie1_db.Site;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		String choixString;
 		int choixInt;
 		do {
 			System.out.println(" +-------------------------------------+");
 			System.out.println(" |               GOBLIN                |");
 			System.out.println(" +-------------------------------------+");
+			System.out.println(" [0] Initialisation");
 			System.out.println(" [1] Calcul bordereau de livraison");
 			System.out.println(" [2] Modification database");
 			System.out.println(" [Q] Quitter");
 			choixString = Clavier.lireString();
 			switch (choixString) {
-			case "1" : 
+			case "0" :
+				InitialisationDB.main(args);
+				System.out.println(" +-------------------------------------+");
+				System.out.println(" |       INITIALISATION REUSSIE        |");
+				System.out.println(" +-------------------------------------+");
+				break;
+			case "1" :
 				System.out.println(" +-------------------------------------+");
 				System.out.println(" |    CALCUL BORDEREAU DE LIVRAISON    |");
 				System.out.println(" +-------------------------------------+");
