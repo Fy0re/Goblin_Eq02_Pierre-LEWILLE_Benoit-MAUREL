@@ -22,7 +22,7 @@ public class Lecture_Bordereau {
 
         Gson gson = new Gson(); // création d'une instance de Gson pour la conversion
 
-        List<Entrepot> entrepotsDispos = new ArrayList<>(); 
+        List<Entrepot> entrepots = new ArrayList<>(); 
         List<Client> clients = new ArrayList<>(); 
         String DateLivraison;
         int n;
@@ -56,7 +56,7 @@ public class Lecture_Bordereau {
 						int idSite = resultSet.getInt( "idSite" );
 						int coutFixe = resultSet.getInt( "coutFixe" );
 						int stock = resultSet.getInt( "stock" );
-						entrepotsDispos.add(new Entrepot(idEntrepot, idSite, coutFixe, stock));
+						entrepots.add(new Entrepot(idEntrepot, idSite, coutFixe, stock));
 					}
 				}
 			}
@@ -64,39 +64,51 @@ public class Lecture_Bordereau {
         
         // essayer d'ouvrir et lire le fichier texte
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath))) {
-            String line = reader.readLine(); // variable pour stocker chaque ligne lue du fichier
             reader.readLine(); // ignorer la première ligne
-            DateLivraison = line; 
+            DateLivraison = reader.readLine(); 
+            String line = reader.readLine(); // variable pour stocker chaque ligne lue du fichier
             n = Integer.parseInt(line);
-            for (int i = 0; i < n ; i++) { // d'abord modifier classe Client avec quantité
+            for (int i = 0; i < n ; i++) { 
+            	line = reader.readLine();
                 if (line != null) {
                 	String[] parts = line.split(":"); // diviser chaque ligne en utilisant la virgule comme délimiteur
-                	if (parts.length >= 2) { // Assurer que la ligne contient au moins deux parties
                         String mail = parts[0]; // Extraire et nettoyer le nom
                         int demande = Integer.parseInt(parts[1]);
-                        clients.add(new Client(" ", mail, 0, demande));// Vérifier dans la base de données un client avec le même mail et lui ajouter la demande correspondante
-                }
+                        //clients.get(clients.indexOf(mail)).setDemande(demande); 
+                        for(Client client : clients) {
+                            if(client.getMail().equals(mail)) {
+                                client.setDemande(demande);
+                                break;
+                            }
+                        } 
             }
         }
-            /*
+            line = reader.readLine(); // lire les données des entrepôts disponibles
             String[] parts2 = line.split(","); // diviser chaque ligne en utilisant la virgule comme délimiteur
-            int n2 = parts2.length;
+            int n2 = entrepots.size();
+            List<Integer> entrepotsIds = new ArrayList<>();
             
-            for (int i = 0; i < n ; i++) {
-            	entrepots_dispos.
-                clients.add(new Client(" ", mail, 0, demande));// Vérifier dans la base de données un client avec le même mail et lui ajouter la demande correspondante
-            } */
+            for (int i = 0; i < parts2.length ; i++) {
+            	entrepotsIds.add(Integer.parseInt(parts2[i]));
+            }
+            
+            for (int i = 0; i < n2 ; i++) {
+            	if (entrepotsIds.contains(entrepots.get(i).getIdEntrepot())== false){
+                entrepots.remove(i);
+                i--;
+            	}
+            	} 
         }
             catch (IOException e) {
             e.printStackTrace(); // Gestion des exceptions d'entrée/sortie
         }
 
-        // Convertir la liste de Personne en une chaîne JSON
-        String json = gson.toJson(clients);
+        String clientsJson = gson.toJson(clients);
+        String entrepotsJson = gson.toJson(entrepots);
 
         // Essayer d'écrire la chaîne JSON dans un nouveau fichier
         try (FileWriter writer = new FileWriter(outputFilePath)) {
-            writer.write(json); // Écrire le JSON dans le fichier
+            writer.write(clientsJson + "\n" + entrepotsJson); // Écrire le JSON dans le fichier
         } catch (IOException e) {
             e.printStackTrace(); // Gestion des exceptions d'entrée/sortie
         }
