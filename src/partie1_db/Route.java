@@ -29,7 +29,7 @@ public class Route {
 	}
 	
 	public String toString() {
-		return this.getDepart() + ", " + this.getArrivee();
+		return "("+ this.getDepart() +", "+ this.getArrivee() +")";
 	}
 	
 }

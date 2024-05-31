@@ -6,54 +6,53 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import com.opencsv.CSVReader;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 
 public class Lecture_db {
 
-	public static void main(String[] args) {
-	
-		
-		//-----------------------------------
-		//Lecture du fichier pour les clients
-		//-----------------------------------
-		List<Client> clients = new ArrayList<Client>();
-		CSVReader readerClient = null;
-		try {
-			readerClient = new CSVReader(new FileReader("Jeux_de_donnees"+File.separator+"petit"+File.separator+"init-clients-30-10-Carre.csv"));
-			String[] nextLineClient;
-			String nom, mail;
-			int emplacementClient;
-			//Ignore la première ligne (les en-têtes)
-            readerClient.readNext();
-			//Lis les lignes 1 par 1
-			while ((nextLineClient = readerClient.readNext()) != null) {
-				for (String tokenClient : nextLineClient) {
-					nom = tokenClient.split(";")[0];
-					mail = tokenClient.split(";")[1];
-					emplacementClient = Integer.parseInt(tokenClient.split(";")[2]);      
-					Client client = new Client(nom, mail, emplacementClient);
-					clients.add(client);
+	public static void main(String[] args) throws Exception {
+
+
+		//-------------------------------------------------------------------------------
+		//AFFECTATION A UNE LISTE "clients" L'ENSEMBLE DES CLIENT LUS DANS LE FICHIER CSV
+		//-------------------------------------------------------------------------------
+		List<Client> clients = new ArrayList<Client>();											//Création de notre liste
+		CSVReader readerClient = null;															//Declaration de la variable
+		try {																					//Permet d'annuler proprement la commande en cas d'erreur
+			readerClient = new CSVReader(new FileReader("Jeux_de_donnees"+File.separator+"petit"+File.separator+"init-clients-30-10-Carre.csv")); 		//Nom du fichier lu
+			String[] nextLineClient;															//Declaration de la variable
+			String nom, mail;																	//Declaration de la variable
+			int emplacementClient;																//Declaration de la variable
+			readerClient.readNext();															//Permet d'ignorer la première ligne (les en-têtes)
+			while ((nextLineClient = readerClient.readNext()) != null) {						//Tant qu'il y a un élément dans la ligne suivante
+				for (String tokenClient : nextLineClient) {										//Pour chaque ligne du fichier
+					nom = tokenClient.split(";")[0];											//On récupère le 1er élément de la ligne (les séparateurs étant ";")
+					mail = tokenClient.split(";")[1];											//On récupère le 2eme élément de la ligne (les séparateurs étant ";")
+					emplacementClient = Integer.parseInt(tokenClient.split(";")[2]);			//On récupère le 3eme élément de la ligne (les séparateurs étant ";") et on le transforme en int
+					Client client = new Client(nom, mail, emplacementClient);					//On utilise les données récupérées pour les mettre dans un objet de classe client
+					clients.add(client);														//On ajoute cette objet à la liste "clients"
 				}
 			}
 		}
-		catch(Exception eClient) {
-			eClient.printStackTrace();
+		catch(Exception eClient) {																//S'il y a eu une erreur
+			eClient.printStackTrace();															//Dire d'où elle vient
 		}
-		
-		
-		//-------------------------------------
-		//Lecture du fichier pour les entrepots
-		//-------------------------------------
+
+
+		//------------------------------------------------------------------------------------
+		//AFFECTATION A UNE LISTE "entrepots" L'ENSEMBLE DES ENTREPOTS LUS DANS LE FICHIER CSV
+		//------------------------------------------------------------------------------------
 		List<Entrepot> entrepots = new ArrayList<Entrepot>();
 		CSVReader readerEntrepot = null;
 		try {
 			readerEntrepot = new CSVReader(new FileReader("Jeux_de_donnees"+File.separator+"petit"+File.separator+"init-entrepots-30-5-Carre.csv"));
 			String[] nextLineEntrepot;
 			int idEntrepot, emplacementEntrepot, coutFixe, stock;
-			//Ignore la première ligne (les en-têtes)
-            readerEntrepot.readNext();
-			//Lis les lignes 1 par 1
+			readerEntrepot.readNext();
 			while ((nextLineEntrepot = readerEntrepot.readNext()) != null) {
 				for (String tokenEntrepot : nextLineEntrepot) {
 					idEntrepot = Integer.parseInt(tokenEntrepot.split(";")[0]);
@@ -68,20 +67,18 @@ public class Lecture_db {
 		catch(Exception eEntrepot) {
 			eEntrepot.printStackTrace();
 		}
-		
-		
-		//---------------------------------
-		//Lecture du fichier pour les sites
-		//---------------------------------
+
+
+		//----------------------------------------------------------------------------
+		//AFFECTATION A UNE LISTE "sites" L'ENSEMBLE DES SITES LUS DANS LE FICHIER CSV
+		//----------------------------------------------------------------------------
 		List<Site> sites = new ArrayList<Site>();
 		CSVReader readerSite = null;
 		try {
 			readerSite = new CSVReader(new FileReader("Jeux_de_donnees"+File.separator+"petit"+File.separator+"init-sites-30-Carre.csv"));
 			String[] nextLineSite;
 			int idSite, posX, posY;
-			//Ignore la première ligne (les en-têtes)
-            readerSite.readNext();
-			//Lis les lignes 1 par 1
+			readerSite.readNext();
 			while ((nextLineSite = readerSite.readNext()) != null) {
 				for (String tokenSite : nextLineSite) {
 					idSite = Integer.parseInt(tokenSite.split(";")[0]);
@@ -95,20 +92,18 @@ public class Lecture_db {
 		catch(Exception eSite) {
 			eSite.printStackTrace();
 		}
-		
-		
-		//----------------------------------
-		//Lecture du fichier pour les routes
-		//----------------------------------
+
+
+		//-------------------------------------------------------------------------------
+		//AFFECTATION A UNE LISTE "routes" L'ENSEMBLE DES ROUTES LUES DANS LE FICHIER CSV
+		//-------------------------------------------------------------------------------
 		List<Route> routes = new ArrayList<Route>();
 		CSVReader readerRoute = null;
 		try {
 			readerRoute = new CSVReader(new FileReader("Jeux_de_donnees"+File.separator+"petit"+File.separator+"init-routes-30-45-Carre.csv"));
 			String[] nextLineRoute;
 			int depart, arrivee;
-			//Ignore la première ligne (les en-têtes)
-            readerRoute.readNext();
-			//Lis les lignes 1 par 1
+			readerRoute.readNext();
 			while ((nextLineRoute = readerRoute.readNext()) != null) {
 				for (String tokenRoute : nextLineRoute) {
 					depart = Integer.parseInt(tokenRoute.split(";")[0]);
@@ -120,8 +115,97 @@ public class Lecture_db {
 		}
 		catch(Exception eRoute) {
 			eRoute.printStackTrace();
-		}	
-		
-		System.out.print(routes.toString());
+		}
+
+		//---------------------------
+		//CREATION TABLES / DATABASE
+		//--------------------------
+		Class.forName( "org.hsqldb.jdbcDriver"  );												//Appel au driver qui permet de faire des databases
+		String url = "jdbc:hsqldb:file:database"+File.separator+"goblin;shutdown=true";			//Emplacement dans le projet de notre database
+		String login = "sa";
+		String password = "";
+
+		try (Connection connection = DriverManager.getConnection( url, login, password )){		//On se connecte à la db et si la connexion saute, on a un message d'exeption
+			
+			//Réinitialisation de nos database
+			String requete = "DROP TABLE CLIENT IF EXISTS;"
+					+"DROP TABLE ENTREPOT IF EXISTS;"
+					+"DROP TABLE ROUTE IF EXISTS;"
+					+"DROP TABLE SITE IF EXISTS;";												//Table SITE faite en dernier car il y a des clés étrangères qui lui sont reliées
+			try ( Statement statement = connection.createStatement() ) {
+				statement.executeUpdate( requete );												//On execute la requete redigée ci-dessus
+			}
+			
+			//Création des tables
+			requete = "CREATE TABLE SITE ("														//Table SITE faite en première car il y a des clés étrangères qui lui sont reliées
+					+"idSite int,"
+					+"posX int,"
+					+"posY int,"
+					+"PRIMARY KEY(idSite));"
+					+""
+					+"CREATE TABLE CLIENT ("
+					+"nom varchar(20),"
+					+"mail varchar(50),"
+					+"emplacement int,"
+					+"PRIMARY KEY(mail),"
+					+"FOREIGN KEY (emplacement) REFERENCES SITE (idSite) ON DELETE RESTRICT);"
+					+""
+					+"CREATE TABLE ENTREPOT ("
+					+"idEntrepot int,"
+					+"idSite int,"
+					+"coutFixe int,"
+					+"stock int,"
+					+"PRIMARY KEY(idEntrepot),"
+					+"FOREIGN KEY (idSite) REFERENCES SITE (idSite) ON DELETE RESTRICT);"
+					+""
+					+"CREATE TABLE ROUTE ("
+					+"depart int,"
+					+"arrivee int,"
+					+"PRIMARY KEY(depart, arrivee),"
+					+"FOREIGN KEY (depart) REFERENCES SITE (idSite) ON DELETE RESTRICT,"
+					+"FOREIGN KEY (arrivee) REFERENCES SITE (idSite) ON DELETE RESTRICT);";
+			try ( Statement statement = connection.createStatement() ) {
+				statement.executeUpdate( requete );
+			}
+
+			//Remplissage des tables
+			requete = "INSERT INTO SITE (idSite, posX, posY) VALUES";							//Table SITE faite en première car il y a des clés étrangères qui lui sont reliées
+			for (int i=0; i < sites.size()-1; i++) {											//On regarde tous les éléments de la liste "sites" sauf le dernier
+				requete += sites.get(i)+",";													//On ajoute tous les éléments dans notre requete
+			}
+			requete += sites.get(sites.size()-1)+";";											//On ajoute le dernier élément de la liste sans "," et avec un ";"
+			try ( Statement statement = connection.createStatement() ) {
+				statement.executeUpdate( requete );
+			}
+			requete = "INSERT INTO CLIENT (nom, mail, emplacement) VALUES";
+			for (int i=0; i < clients.size()-1; i++) {
+				requete += "('"+ clients.get(i).getNom() +"',";
+				requete += "'"+ clients.get(i).getMail() +"',";
+				requete += clients.get(i).getEmplacement() +"),";
+			}
+			requete += "('"+ clients.get(clients.size()-1).getNom() +"',";
+			requete += "'"+ clients.get(clients.size()-1).getMail() +"',";
+			requete += clients.get(clients.size()-1).getEmplacement() +");";
+			try ( Statement statement = connection.createStatement() ) {
+				statement.executeUpdate( requete );
+			}
+			requete = "INSERT INTO ENTREPOT (idEntrepot, idSite, coutFixe, stock) VALUES";
+			for (int i=0; i < entrepots.size()-1; i++) {
+				requete += entrepots.get(i)+",";
+			}
+			requete += entrepots.get(entrepots.size()-1)+";";
+			try ( Statement statement = connection.createStatement() ) {
+				statement.executeUpdate( requete );
+			}
+			requete = "INSERT INTO ROUTE (depart, arrivee) VALUES";
+			for (int i=0; i < routes.size()-1; i++) {
+				requete += routes.get(i)+",";
+			}
+			requete += routes.get(routes.size()-1)+";";
+			try ( Statement statement = connection.createStatement() ) {
+				statement.executeUpdate( requete );
+			}
+			
+		}
 	}
 }

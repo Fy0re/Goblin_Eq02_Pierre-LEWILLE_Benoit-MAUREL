@@ -41,8 +41,8 @@ public class Entrepot {
 	}
 
 	public String toString() {
-		return this.getIdEntrepot() + ", " + this.getIdSite() + ", " + this.getCoutFixe() + ", "
-				+ this.getStock();
+		return "("+ this.getIdEntrepot() +", "+ this.getIdSite() +", "+ this.getCoutFixe()
+				+", "+ this.getStock() +")";
 	}
 
 }

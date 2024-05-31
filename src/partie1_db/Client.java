@@ -5,6 +5,7 @@ public class Client {
 	private String nom;
 	private String mail;
 	private int emplacement;
+	private int demande;
 	
 	public Client(String nom, String mail, int emplacement) {
 		/*if (id_site==null || pos_x==null || pos_y==null) {
@@ -13,6 +14,7 @@ public class Client {
 		this.nom = nom;
 		this.mail = mail;
 		this.emplacement = emplacement;
+		this.demande = 0;
 	}
 
 	public String getNom() {
@@ -27,6 +29,14 @@ public class Client {
 		return this.emplacement;
 	}
 	
+	public void setDemande(int demande) {
+		this.demande = demande;
+	}
+	
+	public void resetDemande() {
+		this.demande = 0;
+	}
+
 	public boolean equals(Object o) {
 		return  o!=null
 				&& o instanceof Client
@@ -36,9 +46,7 @@ public class Client {
 	}
 
 	public String toString() {
-		return this.getNom() + ", " + this.getMail() + ", " + this.getEmplacement();
+		return "("+ this.getNom() +", "+ this.getMail() +", "+ this.getEmplacement() +")";
 	}
 
-	
-	
 }
