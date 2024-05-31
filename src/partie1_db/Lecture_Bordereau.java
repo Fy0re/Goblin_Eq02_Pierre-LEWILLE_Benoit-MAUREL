@@ -5,22 +5,63 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Lecture_Bordereau {
-	public static void main(String[] args) {
+	
+	public static void main(String[] args) throws Exception {
+				
         String inputFilePath = "Jeux_de_donnees"+File.separator+"petit"+File.separator+ "init-bordereau-commande-2021-12-25.txt"; // Chemin vers le fichier texte source
         String outputFilePath = "Jeux_de_donnees"+File.separator+"petit"+File.separator+"output.json"; // Chemin vers le fichier JSON de sortie
 
         Gson gson = new Gson(); // création d'une instance de Gson pour la conversion
 
-        List<Entrepot> entrepots_dispos = new ArrayList<>(); 
+        List<Entrepot> entrepotsDispos = new ArrayList<>(); 
         List<Client> clients = new ArrayList<>(); 
         String DateLivraison;
         int n;
 
+		Class.forName( "org.hsqldb.jdbcDriver"  );												//Appel au driver qui permet de faire des databases
+		String url = "jdbc:hsqldb:file:database"+File.separator+"goblin;shutdown=true";			//Emplacement dans le projet de notre database
+		String login = "sa";
+		String password = "";
+
+		try (Connection connection = DriverManager.getConnection( url, login, password )){		//On se connecte à la db et si la connexion saute, on a un message d'exeption
+			String requete = "SELECT * FROM CLIENT";
+			try ( Statement statement = connection.createStatement() ) {
+				try (ResultSet resultSet = statement.executeQuery( requete ) ) {
+					while( resultSet.next() ) {
+						String nom = resultSet.getString( "nom" );
+						String mail = resultSet.getString( "mail" );
+						int emplacement = resultSet.getInt( "emplacement" );
+						int demande = resultSet.getInt( "demande" );
+						clients.add(new Client(nom, mail, emplacement, demande));
+					}
+				}
+			}
+		}
+		
+		try (Connection connection = DriverManager.getConnection( url, login, password )){		//On se connecte à la db et si la connexion saute, on a un message d'exeption
+			String requete = "SELECT * FROM ENTREPOT";
+			try ( Statement statement = connection.createStatement() ) {
+				try (ResultSet resultSet = statement.executeQuery( requete ) ) {
+					while( resultSet.next() ) {
+						int idEntrepot = resultSet.getInt( "idEntrepot" );
+						int idSite = resultSet.getInt( "idSite" );
+						int coutFixe = resultSet.getInt( "coutFixe" );
+						int stock = resultSet.getInt( "stock" );
+						entrepotsDispos.add(new Entrepot(idEntrepot, idSite, coutFixe, stock));
+					}
+				}
+			}
+		}
+        
         // essayer d'ouvrir et lire le fichier texte
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath))) {
             String line = reader.readLine(); // variable pour stocker chaque ligne lue du fichier
