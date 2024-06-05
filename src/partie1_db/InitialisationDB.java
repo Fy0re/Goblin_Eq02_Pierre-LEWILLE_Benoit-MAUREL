@@ -56,7 +56,7 @@ public class InitialisationDB {
 					idEntrepot = Integer.parseInt(tokenEntrepot.split(";")[0]);
 					emplacementEntrepot = Integer.parseInt(tokenEntrepot.split(";")[1]);
 					coutFixe = Integer.parseInt(tokenEntrepot.split(";")[2]); 
-					stock = Integer.parseInt(tokenEntrepot.split(";")[2]);    
+					stock = Integer.parseInt(tokenEntrepot.split(";")[3]);    
 					Entrepot entrepot = new Entrepot(idEntrepot, emplacementEntrepot, coutFixe, stock);
 					entrepots.add(entrepot);
 				}
