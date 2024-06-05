@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoutVariable {
+public class InitialisationDBCoutVariable {
 
 	public static void main(String[] args) throws Exception {
 
@@ -105,7 +105,6 @@ public class CoutVariable {
  				}
  			}
  			
-			
 			//-------------------------------------------------------------------------------
 			//AFFECTATION A UNE LISTE "routes" L'ENSEMBLE DES ROUTES LUES DANS LE FICHIER CSV
 			//-------------------------------------------------------------------------------
@@ -157,4 +156,3 @@ public class CoutVariable {
 		}		
 	}
 }
-
