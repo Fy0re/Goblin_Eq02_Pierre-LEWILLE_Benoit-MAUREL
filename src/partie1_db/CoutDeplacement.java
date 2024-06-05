@@ -21,26 +21,24 @@ public class CoutDeplacement {
 	}
 
 	public int getDepart() {
-		return depart;
+		return this.depart;
 	}
 
 	public int getArrivee() {
-		return arrivee;
+		return this.arrivee;
 	}
 
 	public int getCout() {
-		return cout;
+		return this.cout;
 	}
 
 	public String getChemin() {
-		return chemin;
+		return this.chemin;
 	}
 	
 	public String toString() {
-		return "(" + depart + ", " + arrivee + ", " + cout + ", " + chemin + ")";
+		return "(" + this.getDepart() + ", " + this.getArrivee() + ", "
+				+ this.getCout() + ", " + this.getChemin() + ")";
 	}
-	
-	
-	
 	
 }

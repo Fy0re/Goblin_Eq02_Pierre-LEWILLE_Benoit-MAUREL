@@ -14,7 +14,6 @@ public class InitialisationDBEntrepot {
 
 	public static void main(String[] args)  throws Exception {
 
-
 		//------------------------------------------------------------------------------------
 		//AFFECTATION A UNE LISTE "entrepots" L'ENSEMBLE DES ENTREPOTS LUS DANS LE FICHIER CSV
 		//------------------------------------------------------------------------------------
@@ -39,7 +38,6 @@ public class InitialisationDBEntrepot {
 		catch(Exception eEntrepot) {
 			eEntrepot.printStackTrace();
 		}
-
 
 		//-------------------------
 		//CREATION TABLE / DATABASE
@@ -78,9 +76,6 @@ public class InitialisationDBEntrepot {
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );
 			}
-			
 		}
-
 	}
-
 }

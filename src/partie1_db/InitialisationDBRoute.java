@@ -14,7 +14,6 @@ public class InitialisationDBRoute {
 
 	public static void main(String[] args) throws Exception {
 
-
 		//-------------------------------------------------------------------------------
 		//AFFECTATION A UNE LISTE "routes" L'ENSEMBLE DES ROUTES LUES DANS LE FICHIER CSV
 		//-------------------------------------------------------------------------------
@@ -74,8 +73,6 @@ public class InitialisationDBRoute {
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );
 			}
-			
 		}
 	}
-
 }

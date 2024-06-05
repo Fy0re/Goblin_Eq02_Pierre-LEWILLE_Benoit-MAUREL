@@ -58,7 +58,6 @@ public class Clavier {
 		}
 	}
 
-
    public static long lireLong() {
       try {
          return Long.parseLong(lireString().trim());

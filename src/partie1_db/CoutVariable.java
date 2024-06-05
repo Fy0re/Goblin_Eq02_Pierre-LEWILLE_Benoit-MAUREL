@@ -12,6 +12,9 @@ public class CoutVariable {
 
 	public static void main(String[] args) throws Exception {
 
+		//----------------------------------------------
+		//DECLARATION ET INITIALISATION DE NOS VARIABLES
+		//----------------------------------------------
 		Class.forName( "org.hsqldb.jdbcDriver"  );												//Appel au driver qui permet de faire des databases
 		String url = "jdbc:hsqldb:file:database"+File.separator+"goblin;shutdown=true";			//Emplacement dans le projet de notre database
 		String login = "sa";
@@ -19,20 +22,31 @@ public class CoutVariable {
 		String requete = "";
 		int idSite, posX, posY;
 		int nbSite = 0;
+		
 		List<Site> sites = new ArrayList<Site>();
-
-		try (Connection connection = DriverManager.getConnection( url, login, password )){
+		List<Integer> voisins = new ArrayList<Integer>();
+		List<CoutDeplacement> couts = new ArrayList<CoutDeplacement>();
+		
+		try (Connection connection = DriverManager.getConnection( url, login, password )){		//On se connecte à la database
+			
+			//-----------------------------------------------------
+			//ON CHERCHE LE NOMBRE DE SITES DANS LA BASE DE DONNEES
+			//-----------------------------------------------------
 			requete = "SELECT COUNT(idSite) FROM SITE";
 			try ( Statement statement = connection.createStatement() ) {
-				try (ResultSet resultSet = statement.executeQuery( requete ) ) {
+				try ( ResultSet resultSet = statement.executeQuery( requete ) ) {
 					while( resultSet.next() ) {
 						nbSite = resultSet.getInt(1);
 					}
 				}
 			}
+			
+			//-------------------------------------------------
+			//ON CREE UNE LISTE DE SITES QUI CORRESPOND A LA BD
+			//-------------------------------------------------
 			requete = "SELECT * FROM SITE";
 			try ( Statement statement = connection.createStatement() ) {
-				try (ResultSet resultSet = statement.executeQuery( requete ) ) {
+				try ( ResultSet resultSet = statement.executeQuery( requete ) ) {
 					while( resultSet.next() ) {
 						idSite = resultSet.getInt( "idSite" );
 						posX = resultSet.getInt( "posX" );
@@ -43,35 +57,40 @@ public class CoutVariable {
 				}
 			}
 
-			double [][]cout = new double [nbSite][nbSite];
-			List<Integer> voisins = new ArrayList<Integer>();
+			//---------------------------------------------------------------------
+			//ON CREE UNE MATRICE DE COUT QUI CORRESPOND AUX ROUTES DEJA EXISTANTES
+			//---------------------------------------------------------------------
+			int[][] cout = new int[nbSite][nbSite];												//On crée une matrice carre qui représente le cout de deplacement entre chaque site 
 			int voisin;
-
+			
 			for (int i=1; i<=nbSite; i++) {
-				voisins.clear();
-				requete = "SELECT arrivee FROM ROUTE";
+				voisins.clear();																//On clear la liste voisin
+				requete = "SELECT arrivee FROM ROUTE";											//On cherche tous les voisins de i
 				requete += " WHERE ROUTE.depart = " + i;
 				try ( Statement statement = connection.createStatement() ) {
-					try (ResultSet resultSet = statement.executeQuery( requete ) ) {
+					try ( ResultSet resultSet = statement.executeQuery( requete ) ) {
 						while( resultSet.next() ) {
 							voisin = resultSet.getInt("arrivee");
-							voisins.add(voisin);
+							voisins.add(voisin);												//On ajoute tous ces voisins dans une liste
 						}
 					}
 				}
-				for (int j=i; j<=nbSite; j++) {		
-					if (i == j) {
-						cout[i-1][j-1] = 0;
-					} else if (voisins.contains(j)){
-						cout[i-1][j-1] = sites.get(i-1).distanceEntre(sites.get(j-1));
-						cout[j-1][i-1] = cout[i-1][j-1];
-					} else {
-						cout[i-1][j-1] = Integer.MAX_VALUE;
+				for (int j=i; j<=nbSite; j++) {
+					if (i == j) {																//Si on regarde le déplacement entre le site et lui même
+						cout[i-1][j-1] = 0;														//On dit que le cout de déplacement vaut 0
+					} else if (voisins.contains(j)){											//Si j est un voisin de i
+						cout[i-1][j-1] = sites.get(i-1).distanceEntre(sites.get(j-1));			//On lui affecte comme coût la distance des deux sites
+						cout[j-1][i-1] = cout[i-1][j-1];										//Car matrice est symétrique
+					} else {																	//Sinon (ni lui-même, ni voisin)
+						cout[i-1][j-1] = Integer.MAX_VALUE;										//On lui affecte l'infini
 						cout[j-1][i-1] = cout[i-1][j-1];
 					}
 				}
 			}
 
+			//-------------------------------------------------------------------------------
+			//ALGORYTHME FLOYD-WARSHALL QUI PERMET DE CALCULER TOUS LES COUTS DEE SITE A SITE
+			//-------------------------------------------------------------------------------
 			for (int k=0; k < nbSite; k++) {
 				for (int i=0; i < nbSite; i++) {
 					for (int j=0; j < nbSite; j++) {
@@ -85,30 +104,23 @@ public class CoutVariable {
 			//-------------------------------------------------------------------------------
 			//AFFECTATION A UNE LISTE "routes" L'ENSEMBLE DES ROUTES LUES DANS LE FICHIER CSV
 			//-------------------------------------------------------------------------------
-			List<CoutDeplacement> couts = new ArrayList<CoutDeplacement>();
-
 			int cout1;
 			String chemin;
 			for (int i=1; i<=nbSite; i++) {
 				for (int j=1; j<=nbSite; j++) {
-					if (i == j) {
-						cout1 = Integer.MAX_VALUE;
-					} else {
-						cout1 = (int)Math.ceil(cout[i-1][j-1]);
-					}
+					cout1 = cout[i-1][j-1];
 					CoutDeplacement coutDeplacement = new CoutDeplacement(i, j, cout1);
 					couts.add(coutDeplacement);
 				}
 			}
 
-			//--------------------------
-			//CREATION TABLES / DATABASE
-			//--------------------------
-
+			//------------------------------
+			//CREATION TABLE / DATABASE COUT
+			//------------------------------
 			//SUPPRESSION DE LA TABLE COUT
 			requete = "DROP TABLE COUT IF EXISTS;";
 			try ( Statement statement = connection.createStatement() ) {
-				statement.executeUpdate( requete );												//On execute la requete redigée ci-dessus
+				statement.executeUpdate( requete );
 			}
 
 			//CREATION DE LA TABLE COUT
@@ -127,15 +139,15 @@ public class CoutVariable {
 			//REMPLISSAGE DE LA TABLE COUT
 			requete = "INSERT INTO COUT (depart, arrivee, cout, chemin) VALUES";
 			for (int i=0; i < couts.size()-1; i++) {
-				requete += "('"+ couts.get(i).getDepart() +"',";
-				requete += "'"+ couts.get(i).getArrivee() +"',";
-				requete += couts.get(i).getCout() +",";
-				requete += couts.get(i).getChemin() +"),";
+				requete += "(" + couts.get(i).getDepart() + ",";
+				requete += couts.get(i).getArrivee() + ",";
+				requete += couts.get(i).getCout() + ",'";
+				requete += couts.get(i).getChemin() + "'),";
 			}
-			requete += "('"+ couts.get(couts.size()-1).getDepart() +"',";
-			requete += "'"+ couts.get(couts.size()-1).getArrivee() +"',";
-			requete += couts.get(couts.size()-1).getCout() +",";
-			requete += couts.get(couts.size()-1).getChemin() +");";
+			requete += "(" + couts.get(couts.size()-1).getDepart() + ",";
+			requete += couts.get(couts.size()-1).getArrivee() + ",";
+			requete += couts.get(couts.size()-1).getCout() + ",'";
+			requete += couts.get(couts.size()-1).getChemin() + "');";
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );
 			}

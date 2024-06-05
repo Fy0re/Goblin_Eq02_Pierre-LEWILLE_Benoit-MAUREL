@@ -14,7 +14,6 @@ public class InitialisationDBClient {
 
 	public static void main(String[] args) throws Exception {
 
-
 		//-------------------------------------------------------------------------------
 		//AFFECTATION A UNE LISTE "clients" L'ENSEMBLE DES CLIENT LUS DANS LE FICHIER CSV
 		//-------------------------------------------------------------------------------
@@ -41,7 +40,6 @@ public class InitialisationDBClient {
 			eClient.printStackTrace();															//Dire d'où elle vient
 		}
 		
-
 		//-------------------------
 		//CREATION TABLE / DATABASE
 		//-------------------------
@@ -85,9 +83,6 @@ public class InitialisationDBClient {
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );
 			}
-			
 		}
-
 	}
-
 }

@@ -7,9 +7,6 @@ public class Site {
 	private int posY;
 	
 	public Site(int idSite, int posX, int posY) {
-		/*if (id_site==null || pos_x==null || pos_y==null) {
-			throw new IllegalArgumentException("Donnée(s) manquante(s)");
-		} */
 		this.idSite = idSite;
 		this.posX = posX;
 		this.posY = posY;
@@ -27,20 +24,15 @@ public class Site {
 		return this.posY;
 	}
 	
-	public boolean equals(Object o) {
-		return  o!=null
-				&& o instanceof Site
-				&& ( this.getId() == ((Site)o).getId()
-				|| ( this.getPosX() == ((Site)o).getPosX()
-				&& this.getPosY() == ((Site)o).getPosY()));
-	}
-	
 	public String toString() {
 		return "("+ this.getId() +", "+ this.getPosX() +", "+ this.getPosY() +")";
 	}
 	
-	public double distanceEntre(Site s) {
-		return Math.sqrt(Math.pow(this.posX - s.getPosX(),2) + Math.pow(this.posY - s.getPosY(),2));
+	//Permet de connaître la distance à vol d'oiseau entre 2 sites
+	//(arrondi à l'entier supérieur)
+	public int distanceEntre(Site s) {
+		return (int)Math.ceil( 
+				Math.sqrt( Math.pow(this.posX - s.getPosX(),2) + Math.pow(this.posY - s.getPosY(),2) ));
 	}
 
 }

@@ -11,11 +11,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
 public class InitialisationDB {
 
 	public static void main(String[] args) throws Exception {
-
 
 		//-------------------------------------------------------------------------------
 		//AFFECTATION A UNE LISTE "clients" L'ENSEMBLE DES CLIENT LUS DANS LE FICHIER CSV
@@ -43,7 +41,6 @@ public class InitialisationDB {
 			eClient.printStackTrace();															//Dire d'où elle vient
 		}
 
-
 		//------------------------------------------------------------------------------------
 		//AFFECTATION A UNE LISTE "entrepots" L'ENSEMBLE DES ENTREPOTS LUS DANS LE FICHIER CSV
 		//------------------------------------------------------------------------------------
@@ -69,7 +66,6 @@ public class InitialisationDB {
 			eEntrepot.printStackTrace();
 		}
 
-
 		//----------------------------------------------------------------------------
 		//AFFECTATION A UNE LISTE "sites" L'ENSEMBLE DES SITES LUS DANS LE FICHIER CSV
 		//----------------------------------------------------------------------------
@@ -93,7 +89,6 @@ public class InitialisationDB {
 		catch(Exception eSite) {
 			eSite.printStackTrace();
 		}
-
 
 		//-------------------------------------------------------------------------------
 		//AFFECTATION A UNE LISTE "routes" L'ENSEMBLE DES ROUTES LUES DANS LE FICHIER CSV
@@ -132,6 +127,7 @@ public class InitialisationDB {
 			String requete = "DROP TABLE CLIENT IF EXISTS;"
 					+"DROP TABLE ENTREPOT IF EXISTS;"
 					+"DROP TABLE ROUTE IF EXISTS;"
+					+"DROP TABLE COUT IF EXISTS;"
 					+"DROP TABLE SITE IF EXISTS;";												//Table SITE faite en dernier car il y a des clés étrangères qui lui sont reliées
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );												//On execute la requete redigée ci-dessus
@@ -203,7 +199,6 @@ public class InitialisationDB {
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );
 			}
-			
 		}
 	}
 }

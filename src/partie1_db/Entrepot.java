@@ -8,9 +8,6 @@ public class Entrepot {
 	private int stock;
 	
 	public Entrepot(int idEntrepot, int idSite, int coutFixe, int stock) {
-		/*if (id_site==null || pos_x==null || pos_y==null) {
-			throw new IllegalArgumentException("Donnée(s) manquante(s)");
-		} */
 		this.idEntrepot = idEntrepot;
 		this.idSite = idSite;
 		this.coutFixe = coutFixe;
@@ -33,13 +30,6 @@ public class Entrepot {
 		return this.stock;
 	}
 	
-	public boolean equals(Object o) {
-		return  o!=null
-				&& o instanceof Entrepot
-				&& ( this.getIdSite() == ((Entrepot)o).getIdSite()
-				|| this.getIdEntrepot() == ((Entrepot)o).getIdEntrepot());
-	}
-
 	public String toString() {
 		return "("+ this.getIdEntrepot() +", "+ this.getIdSite() +", "+ this.getCoutFixe()
 				+", "+ this.getStock() +")";
