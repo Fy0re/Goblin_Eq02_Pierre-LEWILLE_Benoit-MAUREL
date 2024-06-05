@@ -30,8 +30,8 @@ public class Site {
 	
 	//Permet de connaître la distance à vol d'oiseau entre 2 sites
 	//(arrondi à l'entier supérieur)
-	public int distanceEntre(Site s) {
-		return (int)Math.ceil( 
+	public Double distanceEntre(Site s) {
+		return Math.ceil( 
 				Math.sqrt( Math.pow(this.posX - s.getPosX(),2) + Math.pow(this.posY - s.getPosY(),2) ));
 	}
 

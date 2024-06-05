@@ -56,11 +56,15 @@ public class CoutVariable {
 					}
 				}
 			}
-
+			
 			//---------------------------------------------------------------------
 			//ON CREE UNE MATRICE DE COUT QUI CORRESPOND AUX ROUTES DEJA EXISTANTES
 			//---------------------------------------------------------------------
-			int[][] cout = new int[nbSite][nbSite];												//On crée une matrice carre qui représente le cout de deplacement entre chaque site 
+			Double[][] cout = new Double[nbSite][nbSite];												//On crée une matrice carre qui représente le cout de deplacement entre chaque site 
+			int cout1;
+			String[][] chemin = new String[nbSite][nbSite];										//On crée une matrice carre qui représente le chemin entre chaque site
+			String chemin1;
+			
 			int voisin;
 			
 			for (int i=1; i<=nbSite; i++) {
@@ -77,43 +81,42 @@ public class CoutVariable {
 				}
 				for (int j=i; j<=nbSite; j++) {
 					if (i == j) {																//Si on regarde le déplacement entre le site et lui même
-						cout[i-1][j-1] = 0;														//On dit que le cout de déplacement vaut 0
+						cout[i-1][j-1] = 0.0;														//On dit que le cout de déplacement vaut 0
 					} else if (voisins.contains(j)){											//Si j est un voisin de i
 						cout[i-1][j-1] = sites.get(i-1).distanceEntre(sites.get(j-1));			//On lui affecte comme coût la distance des deux sites
 						cout[j-1][i-1] = cout[i-1][j-1];										//Car matrice est symétrique
 					} else {																	//Sinon (ni lui-même, ni voisin)
-						cout[i-1][j-1] = Integer.MAX_VALUE;										//On lui affecte l'infini
+						cout[i-1][j-1] = Double.MAX_VALUE;										//On lui affecte l'infini
 						cout[j-1][i-1] = cout[i-1][j-1];
 					}
 				}
 			}
-
-			//-------------------------------------------------------------------------------
-			//ALGORYTHME FLOYD-WARSHALL QUI PERMET DE CALCULER TOUS LES COUTS DEE SITE A SITE
-			//-------------------------------------------------------------------------------
+			
+			//------------------------------------------------------------------------------
+			//ALGORYTHME FLOYD-WARSHALL QUI PERMET DE CALCULER TOUS LES COUTS DE SITE A SITE
+			//------------------------------------------------------------------------------
 			for (int k=0; k < nbSite; k++) {
-				for (int i=0; i < nbSite; i++) {
-					for (int j=0; j < nbSite; j++) {
-						if (cout[i][k] + cout[k][j] < cout[i][j]) {
-							cout[i][j] = cout[i][k] + cout[k][j];
-						}
-					}
-				}
-			}
-
+ 				for (int i=0; i < nbSite; i++) {
+ 					for (int j=0; j < nbSite; j++) {
+ 						if (cout[i][k] + cout[k][j] < cout[i][j]) {
+ 							cout[i][j] = cout[i][k] + cout[k][j];
+ 						}
+ 					}
+ 				}
+ 			}
+ 			
+			
 			//-------------------------------------------------------------------------------
 			//AFFECTATION A UNE LISTE "routes" L'ENSEMBLE DES ROUTES LUES DANS LE FICHIER CSV
 			//-------------------------------------------------------------------------------
-			int cout1;
-			String chemin;
 			for (int i=1; i<=nbSite; i++) {
 				for (int j=1; j<=nbSite; j++) {
-					cout1 = cout[i-1][j-1];
+					cout1 = (int)Math.ceil(cout[i-1][j-1]);
 					CoutDeplacement coutDeplacement = new CoutDeplacement(i, j, cout1);
 					couts.add(coutDeplacement);
 				}
 			}
-
+			
 			//------------------------------
 			//CREATION TABLE / DATABASE COUT
 			//------------------------------
@@ -122,7 +125,7 @@ public class CoutVariable {
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );
 			}
-
+			
 			//CREATION DE LA TABLE COUT
 			requete = "CREATE TABLE COUT ("
 					+"depart int,"
@@ -135,7 +138,7 @@ public class CoutVariable {
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );
 			}
-
+			
 			//REMPLISSAGE DE LA TABLE COUT
 			requete = "INSERT INTO COUT (depart, arrivee, cout, chemin) VALUES";
 			for (int i=0; i < couts.size()-1; i++) {
@@ -151,7 +154,7 @@ public class CoutVariable {
 			try ( Statement statement = connection.createStatement() ) {
 				statement.executeUpdate( requete );
 			}
-		}
+		}		
 	}
 }
 
