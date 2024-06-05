@@ -38,5 +38,9 @@ public class Site {
 	public String toString() {
 		return "("+ this.getId() +", "+ this.getPosX() +", "+ this.getPosY() +")";
 	}
+	
+	public double distanceEntre(Site s) {
+		return Math.sqrt(Math.pow(this.posX - s.getPosX(),2) + Math.pow(this.posY - s.getPosY(),2));
+	}
 
 }
