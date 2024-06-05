@@ -126,7 +126,7 @@ public class lectureBordereau {
 			List<Integer> capacity_facility = new ArrayList<>(); 
 			List<Integer> fixed_cost_facility = new ArrayList<>(); 
 			List<Integer> demand_customer = new ArrayList<>(); 
-			List<List<Integer>> cost_matrix = new ArrayList<>();
+			List<List<Integer>> cost_matrix = new ArrayList<List<Integer>>();
 			int num_facility_locations = entrepots.size();
 			int num_customers = affichageClient.size();
 
@@ -151,16 +151,19 @@ public class lectureBordereau {
 			}
 			System.out.println(Identrepots); 
 
+			List<Integer> costsForThisEntrepot = new ArrayList<>();
+			int cout1;
 			for (int i = 0; i < entrepots.size(); i++) {
-				List<Integer> costsForThisEntrepot = new ArrayList<>();  // Crée une nouvelle liste pour les coûts de cet entrepôt
-
+				// Crée une nouvelle liste pour les coûts de cet entrepôt
+				costsForThisEntrepot.clear();
 				for (Integer id : Identrepots) {																//On clear la liste voisin
 					requete = "SELECT cout FROM COUT";											//On cherche tous les voisins de i
 					requete += " WHERE COUT.depart = " + id;
 					try ( Statement statement = connection.createStatement() ) {
 						try ( ResultSet resultSet = statement.executeQuery( requete ) ) {
 							while( resultSet.next() ) {
-								costsForThisEntrepot.add(resultSet.getInt("cout"));
+								cout1 = resultSet.getInt("cout");
+								costsForThisEntrepot.add(cout1);
 							}
 						}
 					}
