@@ -108,12 +108,77 @@ public class lectureBordereau {
 
         String clientsJson = gson.toJson(affichageClient);
         String entrepotsJson = gson.toJson(entrepots);
+        
+        List<Integer> capacity_facility = new ArrayList<>(); 
+        List<Integer> fixed_cost_facility = new ArrayList<>(); 
+        List<Integer> demand_customer = new ArrayList<>(); 
+        List<String> cost_matrix = new ArrayList<>(); 
+        int num_facility_locations = entrepots.size();
+        int num_customers = affichageClient.size();
+        
+        for (int i = 0; i < entrepots.size(); i++) {
+            	capacity_facility.add(entrepots.get(i).getStock());
+            	fixed_cost_facility.add(entrepots.get(i).getCoutFixe());
+            	}
+        for (int i = 0; i < affichageClient.size(); i++) {
+        	demand_customer.add(affichageClient.get(i).getDemande());
+        	}
 
         // Essayer d'écrire la chaîne JSON dans un nouveau fichier
-        try (FileWriter writer = new FileWriter(outputFilePath)) {
+        /*try (FileWriter writer = new FileWriter(outputFilePath)) {
             writer.write(clientsJson + "\n" + entrepotsJson); // Écrire le JSON dans le fichier
         } catch (IOException e) {
             e.printStackTrace(); // Gestion des exceptions d'entrée/sortie
+        }
+        try (FileWriter writer = new FileWriter(outputFilePath)) {
+            writer.write("{"+"\n" + '"'+"capacity_facility"+'"'+": " + capacity_facility + "," + "\n" + '"'+"fixed_cost_facility"+'"'+": " +  fixed_cost_facility + "," + "\n" + '"'+"demand_customer"+'"'+": " + demand_customer + "," + "\n" +  '"'+"num_facility_locations"+'"'+": " + num_facility_locations +"," + "\n" + '"'+"num_customers"+'"'+": " + num_customers +"\n" + "}"); // Écrire le JSON dans le fichier
+        } catch (IOException e) {
+            e.printStackTrace(); // Gestion des exceptions d'entrée/sortie
+        }
+*/
+     // Création d'un FileWriter pour écrire dans un fichier spécifié.
+        try (FileWriter writer = new FileWriter(outputFilePath)) {
+            // Début de l'écriture de l'objet JSON avec une accolade ouvrante.
+            writer.write("{\n");
+            
+            // Écriture du tableau JSON pour 'capacity_facility'.
+            writer.write("\"capacity_facility\": [\n");
+            // Boucle pour écrire chaque capacité de l'installation, avec une virgule si ce n'est pas le dernier élément.
+            for (int i = 0; i < capacity_facility.size(); i++) {
+                writer.write("    " + capacity_facility.get(i) + (i < capacity_facility.size() - 1 ? ",\n" : "\n"));
+            }
+            // Fermeture du tableau 'capacity_facility'.
+            writer.write("],\n");
+            
+            // Écriture du tableau JSON pour 'fixed_cost_facility'.
+            writer.write("\"fixed_cost_facility\": [\n");
+            // Boucle pour écrire chaque coût fixe, avec une virgule si ce n'est pas le dernier élément.
+            for (int i = 0; i < fixed_cost_facility.size(); i++) {
+                writer.write("    " + fixed_cost_facility.get(i) + (i < fixed_cost_facility.size() - 1 ? ",\n" : "\n"));
+            }
+            // Fermeture du tableau 'fixed_cost_facility'.
+            writer.write("],\n");
+            
+            // Écriture du tableau JSON pour 'demand_customer'.
+            writer.write("\"demand_customer\": [\n");
+            // Boucle pour écrire chaque demande du client, avec une virgule si ce n'est pas le dernier élément.
+            for (int i = 0; i < demand_customer.size(); i++) {
+                writer.write("    " + demand_customer.get(i) + (i < demand_customer.size() - 1 ? ",\n" : "\n"));
+            }
+            // Fermeture du tableau 'demand_customer'.
+            writer.write("],\n");
+            
+            // Écriture du nombre total de localisations des installations.
+            writer.write("\"num_facility_locations\": " + num_facility_locations + ",\n");
+            // Écriture du nombre total de clients.
+            writer.write("\"num_customers\": " + num_customers + "\n");
+            
+            // Fermeture de l'objet JSON.
+            writer.write("}\n");
+        // Gestion des exceptions d'entrée/sortie.
+        } catch (IOException e) {
+            // Impression de la trace de l'erreur en cas d'exception.
+            e.printStackTrace();
         }
 
         System.out.println("Conversion terminée."); // Confirmer la fin de la conversion
