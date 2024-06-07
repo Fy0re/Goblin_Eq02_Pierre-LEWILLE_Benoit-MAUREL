@@ -83,7 +83,6 @@ public class lectureBordereau {
 								break;
 							}
 						} 
-
 					}
 				}
 				line = reader.readLine(); // lire les données des entrepôts disponibles
@@ -94,7 +93,6 @@ public class lectureBordereau {
 				for (int i = 0; i < parts2.length ; i++) {
 					entrepotsIds.add(Integer.parseInt(parts2[i]));
 				}
-
 				for (int i = 0; i < entrepots.size(); i++) {
 					if (entrepotsIds.contains(entrepots.get(i).getIdEntrepot())== false){
 						entrepots.remove(i);
@@ -102,9 +100,10 @@ public class lectureBordereau {
 					}
 				} 
 			}
-			catch (IOException e) {
+			
+			/*catch (IOException e) {
 				e.printStackTrace(); // Gestion des exceptions d'entrée/sortie
-			}
+			}*/
 
 			requete = "SELECT * FROM COUT";
 			try ( Statement statement = connection.createStatement() ) {
@@ -126,7 +125,8 @@ public class lectureBordereau {
 			List<Integer> capacity_facility = new ArrayList<>(); 
 			List<Integer> fixed_cost_facility = new ArrayList<>(); 
 			List<Integer> demand_customer = new ArrayList<>(); 
-			List<List<Integer>> cost_matrix = new ArrayList<List<Integer>>();
+			List<List<Integer>> cost_matrix = new ArrayList<>();
+
 			int num_facility_locations = entrepots.size();
 			int num_customers = affichageClient.size();
 
@@ -144,33 +144,38 @@ public class lectureBordereau {
         	}
         }*/
 
-			List<Integer> Identrepots = new ArrayList<>();  // Crée une nouvelle liste pour id des entrepots
+			List<Integer> idEentrepots = new ArrayList<>();  // Crée une nouvelle liste pour id des entrepots
 			System.out.println(entrepots); 
 			for (int i = 0; i < entrepots.size(); i++) {
-				Identrepots.add(entrepots.get(i).getIdSite());
+				idEentrepots.add(entrepots.get(i).getIdSite());
 			}
-			System.out.println(Identrepots); 
+			System.out.println(idEentrepots); 
 
-			List<Integer> costsForThisEntrepot = new ArrayList<>();
+			//List<Integer> costsForThisEntrepot = new ArrayList<>();
 			int cout1;
-			for (int i = 0; i < entrepots.size(); i++) {
-				// Crée une nouvelle liste pour les coûts de cet entrepôt
-				costsForThisEntrepot.clear();
-				for (Integer id : Identrepots) {																//On clear la liste voisin
-					requete = "SELECT cout FROM COUT";											//On cherche tous les voisins de i
-					requete += " WHERE COUT.depart = " + id;
-					try ( Statement statement = connection.createStatement() ) {
-						try ( ResultSet resultSet = statement.executeQuery( requete ) ) {
-							while( resultSet.next() ) {
-								cout1 = resultSet.getInt("cout");
-								costsForThisEntrepot.add(cout1);
-							}
-						}
-					}
 
+			// Crée une nouvelle liste pour les coûts de cet entrepôt
+
+			for (int idEn : idEentrepots) {																//On clear la liste voisin	
+				List<Integer> costsForThisEntrepot = new ArrayList<>();
+				requete = "SELECT cout FROM COUT";											//On cherche tous les voisins de i
+				requete += " JOIN SITE ON SITE.idSite = COUT.arrivee";
+				requete += " JOIN CLIENT ON client.emplacement = SITE.idSite";
+				requete += " WHERE COUT.depart = " + idEn;
+				requete += " AND CLIENT.demande != 0";
+				try ( Statement statement = connection.createStatement() ) {
+					try ( ResultSet resultSet = statement.executeQuery( requete ) ) {
+						while( resultSet.next() ) {
+							cout1 = resultSet.getInt("cout");
+							costsForThisEntrepot.add(cout1);
+						}
+						cost_matrix.add(costsForThisEntrepot);
+					}
 				}
-				cost_matrix.add(costsForThisEntrepot);  // Ajoute la liste des coûts à la matrice des coûts
+
 			}
+
+
 
 
 
